@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 from .db import db, init
-from .view import BASE, HOT_MIN, TABS, make_templates
+from .view import ADSENSE, BASE, HOT_MIN, TABS, make_templates
 
 OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else BASE.parent / "_site"
 PAGE_SIZE = 40
@@ -26,6 +26,7 @@ class StaticUrls:
     def __init__(self, root: str):
         self.root = root
         self.css = root + "static/style.css"
+        self.privacy = root + "privacy.html"
 
     def board(self, kind: str = "", page: int = 1) -> str:
         return f"{self.root}{kind or 'index'}{'' if page == 1 else f'-{page}'}.html"
@@ -72,6 +73,9 @@ def main() -> None:
         html = post_tpl.render(post=p, reactions=reactions.get(p["id"], []), comments=comments.get(p["id"], []), err="", u=u)
         (OUT / "p" / f"{p['id']}.html").write_text(html, encoding="utf-8")
 
+    (OUT / "privacy.html").write_text(env.get_template("privacy.html").render(u=StaticUrls("./")), encoding="utf-8")
+    if ADSENSE:  # 하위 경로용 사본. 애드센스가 실제로 읽는 것은 도메인 루트의 ads.txt
+        (OUT / "ads.txt").write_text(f"google.com, {ADSENSE.replace('ca-', '')}, DIRECT, f08c47fec0942fa0\n")
     print(f"{len(posts)}개 글을 {OUT} 에 구웠습니다")
 
 

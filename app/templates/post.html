@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ post.title }} — 도란도란{% endblock %}
+{% block title %}{{ post.title_ko or post.title }} — 도란도란{% endblock %}
 {% block content %}
 <div class="gall-head">
   <h1><a href="{{ u.board() }}">AI 생태계 갤러리</a></h1>
@@ -7,7 +7,8 @@
 
 <article class="post">
   <header>
-    <h2><span class="head">[{{ KINDS.get(post.kind, post.kind) }}]</span> {{ post.title }}</h2>
+    <h2><span class="head">[{{ KINDS.get(post.kind, post.kind) }}]</span> {{ post.title_ko or post.title }}</h2>
+    {% if post.title_ko and post.title_ko != post.title %}<p class="orig-title" lang="en">{{ post.title }}</p>{% endif %}
     <div class="meta">
       <span>퍼온 곳 <b>{{ post.source }}</b></span>
       <span>{{ post.published_at|tfull }}</span>
@@ -17,7 +18,11 @@
     </div>
   </header>
   <div class="body">
-    {% if post.summary %}
+    {% if post.summary_ko and post.summary_ko != post.summary %}
+    <div class="label">AI 요약</div>
+    <p class="summary">{{ post.summary_ko }}</p>
+    {% if post.summary %}<details class="orig"><summary>원문 발췌 보기</summary><p lang="en">{{ post.summary }}</p></details>{% endif %}
+    {% elif post.summary %}
     <p class="summary">{{ post.summary }}</p>
     {% else %}
     <p class="summary muted">요약이 없는 글입니다. 원문에서 확인하세요.</p>
@@ -39,7 +44,8 @@
       <span class="muted">{{ r.created_at|tfull }}</span>
       {% if r.url %}<a href="{{ r.url }}" target="_blank" rel="noopener noreferrer nofollow">원글</a>{% endif %}
     </div>
-    <div class="txt">{{ r.body }}</div>
+    <div class="txt">{{ r.body_ko or r.body }}</div>
+    {% if r.body_ko and r.body_ko != r.body %}<details class="orig"><summary>원문</summary><p>{{ r.body }}</p></details>{% endif %}
   </div>
   {% else %}
   <p class="empty">아직 긁어온 바깥 반응이 없습니다.</p>

@@ -31,7 +31,7 @@
       <td class="c-no">{{ p.id }}</td>
       <td class="c-head">{{ KINDS.get(p.kind, p.kind) }}</td>
       <td class="c-title">
-        <a href="{{ u.post(p.id) }}">{{ p.title }}</a>
+        <a href="{{ u.post(p.id) }}">{{ p.title_ko or p.title }}</a>
         {% if p.n_reactions + p.n_comments %}<span class="cnt" title="바깥 반응 {{ p.n_reactions }} · 댓글 {{ p.n_comments }}">[{{ p.n_reactions + p.n_comments }}]</span>{% endif %}
         <span class="m-meta">{{ KINDS.get(p.kind, p.kind) }} · {{ p.source }} · {{ p.published_at|t }}</span>
       </td>

@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  models: read     # GitHub Models 무료 번역
   pages: write
   id-token: write
 
@@ -37,8 +38,14 @@ jobs:
 
       - name: 수집
         run: python -m app.collector
+      - name: 번역
+        run: python -m app.translate
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 정적 사이트 굽기
         run: python -m app.build _site
+        env:
+          DORAN_ADSENSE: ${{ vars.DORAN_ADSENSE }}   # 저장소 변수에 ca-pub-... 를 넣으면 광고가 켜진다
 
       - uses: actions/cache/save@v4
         with:

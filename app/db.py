@@ -72,6 +72,18 @@ def db():
         conn.close()
 
 
+# 나중에 붙은 컬럼. 이미 있는 DB(Actions 캐시)에도 붙여 준다.
+MIGRATIONS = [
+    ("posts", "title_ko", "TEXT"),
+    ("posts", "summary_ko", "TEXT"),
+    ("reactions", "body_ko", "TEXT"),
+]
+
+
 def init() -> None:
     with db() as conn:
         conn.executescript(SCHEMA)
+        for table, col, typ in MIGRATIONS:
+            cols = {r["name"] for r in conn.execute(f"PRAGMA table_info({table})")}
+            if col not in cols:
+                conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {typ}")

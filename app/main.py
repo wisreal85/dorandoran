@@ -47,6 +47,7 @@ class ServerUrls:
     """서버로 띄웠을 때의 주소 규칙."""
     static = False
     css = "/static/style.css"
+    privacy = "/privacy"
 
     def __init__(self, q: str = ""):
         self.q = q
@@ -114,6 +115,11 @@ def board(request: Request, page: int = 1, kind: str = "", q: str = ""):
         "posts": posts, "page": page, "pages": pages, "page_range": range(first, min(first + 9, pages) + 1),
         "kind": kind, "q": q, "total": total, "last": last, "u": ServerUrls(q),
     })
+
+
+@app.get("/privacy")
+def privacy(request: Request):
+    return templates.TemplateResponse(request, "privacy.html", {"u": ServerUrls()})
 
 
 @app.get("/post/{post_id}")
