@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="gall-head">
+  <h1><a href="{{ u.board() }}">AI 생태계 갤러리</a></h1>
+  <span class="muted">글 {{ total }}개{% if last %} · 마지막 수집 {{ last|tfull }}{% endif %}</span>
+</div>
+
+<div class="bar">
+  <nav class="tabs" aria-label="말머리">
+    {% for key, label in TABS %}
+    <a href="{{ u.board(key) }}" {% if kind == key %}class="on" aria-current="page"{% endif %}>{{ label }}</a>
+    {% endfor %}
+  </nav>
+  {% if not u.static %}
+  <form class="search" action="/" method="get">
+    <input type="hidden" name="kind" value="{{ kind }}">
+    <label class="sr" for="q">제목 검색</label>
+    <input id="q" name="q" value="{{ q }}" placeholder="제목 검색">
+    <button type="submit">검색</button>
+  </form>
+  {% endif %}
+</div>
+
+<table class="list">
+  <thead>
+    <tr><th class="c-no">번호</th><th class="c-head">말머리</th><th>제목</th><th class="c-src">퍼온 곳</th><th class="c-date">작성일</th><th class="c-view">{{ "반응" if u.static else "조회" }}</th></tr>
+  </thead>
+  <tbody>
+  {% for p in posts %}
+    <tr>
+      <td class="c-no">{{ p.id }}</td>
+      <td class="c-head">{{ KINDS.get(p.kind, p.kind) }}</td>
+      <td class="c-title">
+        <a href="{{ u.post(p.id) }}">{{ p.title }}</a>
+        {% if p.n_reactions + p.n_comments %}<span class="cnt" title="바깥 반응 {{ p.n_reactions }} · 댓글 {{ p.n_comments }}">[{{ p.n_reactions + p.n_comments }}]</span>{% endif %}
+        <span class="m-meta">{{ KINDS.get(p.kind, p.kind) }} · {{ p.source }} · {{ p.published_at|t }}</span>
+      </td>
+      <td class="c-src">{{ p.source }}</td>
+      <td class="c-date" title="{{ p.published_at|tfull }}">{{ p.published_at|t }}</td>
+      <td class="c-view">{{ p.n_reactions + p.n_comments if u.static else p.views }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="6" class="empty">아직 글이 없습니다. 수집기가 처음 도는 중이면 잠시 뒤 새로고침하세요.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% if pages > 1 %}
+<nav class="pager" aria-label="페이지">
+  {% if page > 1 %}<a href="{{ u.board(kind, page - 1) }}">이전</a>{% endif %}
+  {% for n in page_range %}
+  <a href="{{ u.board(kind, n) }}" {% if n == page %}class="on" aria-current="page"{% endif %}>{{ n }}</a>
+  {% endfor %}
+  {% if page < pages %}<a href="{{ u.board(kind, page + 1) }}">다음</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

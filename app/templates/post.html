@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} — 도란도란{% endblock %}
+{% block content %}
+<div class="gall-head">
+  <h1><a href="{{ u.board() }}">AI 생태계 갤러리</a></h1>
+</div>
+
+<article class="post">
+  <header>
+    <h2><span class="head">[{{ KINDS.get(post.kind, post.kind) }}]</span> {{ post.title }}</h2>
+    <div class="meta">
+      <span>퍼온 곳 <b>{{ post.source }}</b></span>
+      <span>{{ post.published_at|tfull }}</span>
+      {% if not u.static %}<span>조회 {{ post.views }}</span>{% endif %}
+      <span>바깥 반응 {{ reactions|length }}</span>
+      {% if not u.static %}<span>댓글 {{ comments|length }}</span>{% endif %}
+    </div>
+  </header>
+  <div class="body">
+    {% if post.summary %}
+    <p class="summary">{{ post.summary }}</p>
+    {% else %}
+    <p class="summary muted">요약이 없는 글입니다. 원문에서 확인하세요.</p>
+    {% endif %}
+    <p class="links">
+      <a class="btn" href="{{ post.url }}" target="_blank" rel="noopener noreferrer nofollow">원문 보러 가기</a>
+      {% if post.hn_id %}<a href="https://news.ycombinator.com/item?id={{ post.hn_id }}" target="_blank" rel="noopener noreferrer nofollow">Hacker News 토론</a>{% endif %}
+    </p>
+  </div>
+</article>
+
+<section class="box">
+  <h3>바깥 반응 <span class="cnt">{{ reactions|length }}</span></h3>
+  {% for r in reactions %}
+  <div class="rx">
+    <div class="who">
+      <span class="badge b-{{ r.platform }}">{{ PLATFORMS.get(r.platform, r.platform) }}</span>
+      <b>{{ r.author }}</b>
+      <span class="muted">{{ r.created_at|tfull }}</span>
+      {% if r.url %}<a href="{{ r.url }}" target="_blank" rel="noopener noreferrer nofollow">원글</a>{% endif %}
+    </div>
+    <div class="txt">{{ r.body }}</div>
+  </div>
+  {% else %}
+  <p class="empty">아직 긁어온 바깥 반응이 없습니다.</p>
+  {% endfor %}
+</section>
+
+<section class="box" id="comments">
+  {% if u.static %}
+  <h3>댓글</h3>
+  <p class="empty">익명 댓글은 서버가 붙으면 열립니다. 지금은 샘플 페이지라 읽기 전용입니다.</p>
+  {% else %}
+  <h3>댓글 <span class="cnt">{{ comments|length }}</span></h3>
+  {% if err %}
+  <p class="err" role="alert">{{ {"body": "내용은 1~1000자로 써 주세요.", "pw": "비밀번호는 2자 이상이어야 합니다.", "fast": "너무 빨리 쓰고 있습니다. 잠시 뒤에 다시 써 주세요.", "del": "비밀번호가 맞지 않습니다."}.get(err, "요청을 처리하지 못했습니다.") }}</p>
+  {% endif %}
+  {% for c in comments %}
+  <div class="cm">
+    <div class="who">
+      <b>{{ c.nickname }}</b>{% if c.ip_tag %}<span class="muted">({{ c.ip_tag }})</span>{% endif %}
+      <span class="muted">{{ c.created_at|tfull }}</span>
+      <details class="del">
+        <summary>삭제</summary>
+        <form method="post" action="/comments/{{ c.id }}/delete">
+          <label class="sr" for="del-{{ c.id }}">비밀번호</label>
+          <input id="del-{{ c.id }}" type="password" name="password" placeholder="비밀번호" required>
+          <button type="submit">확인</button>
+        </form>
+      </details>
+    </div>
+    <div class="txt">{{ c.body }}</div>
+  </div>
+  {% else %}
+  <p class="empty">첫 댓글을 남겨 보세요.</p>
+  {% endfor %}
+
+  <form class="write" method="post" action="/post/{{ post.id }}/comments">
+    <div class="row">
+      <label class="sr" for="nick">닉네임</label>
+      <input id="nick" name="nickname" value="ㅇㅇ" maxlength="20" placeholder="닉네임">
+      <label class="sr" for="pw">비밀번호</label>
+      <input id="pw" type="password" name="password" minlength="2" required placeholder="비밀번호 (삭제할 때 필요)">
+    </div>
+    <label class="sr" for="body">댓글 내용</label>
+    <textarea id="body" name="body" rows="3" maxlength="1000" required placeholder="로그인 없이 익명으로 남깁니다"></textarea>
+    <button type="submit">등록</button>
+  </form>
+  {% endif %}
+</section>
+
+<p><a href="{{ u.board() }}">← 목록으로</a></p>
+{% endblock %}

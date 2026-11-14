@@ -1,0 +1,60 @@
+name: 수집하고 배포
+
+on:
+  schedule:
+    - cron: "7,37 * * * *"   # 30분마다 (GitHub 사정에 따라 몇 분씩 늦을 수 있음)
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements.txt
+
+      # 수집 내역(SQLite)은 캐시에 이어 붙인다 — 저장소 커밋 기록을 더럽히지 않기 위해
+      - uses: actions/cache/restore@v4
+        with:
+          path: data
+          key: doran-db-${{ github.run_id }}
+          restore-keys: doran-db-
+
+      - name: 수집
+        run: python -m app.collector
+      - name: 정적 사이트 굽기
+        run: python -m app.build _site
+
+      - uses: actions/cache/save@v4
+        with:
+          path: data
+          key: doran-db-${{ github.run_id }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

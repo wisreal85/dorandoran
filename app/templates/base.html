@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}도란도란 — AI 생태계 갤러리{% endblock %}</title>
+<link rel="stylesheet" href="{{ u.css }}">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="{{ u.board() }}">도란도란</a>
+    <span class="tagline">AI 생태계 소식, 누가 퍼 오고 다 같이 떠드는 곳</span>
+  </div>
+</header>
+<main class="wrap">
+{% block content %}{% endblock %}
+</main>
+<footer class="wrap foot">
+  수집 통로: 뉴스·블로그 RSS, Hacker News, Reddit, Lobsters, GeekNews, dev.to, 유튜브 RSS, Hugging Face, GitHub, Bluesky, Mastodon. 무료로 열려 있는 통로만 긁어옵니다. 요약과 반응의 저작권은 원 작성자에게 있습니다.
+</footer>
+</body>
+</html>
