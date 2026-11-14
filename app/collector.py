@@ -61,7 +61,7 @@ COMMUNITY_FEEDS = [
 # 유튜브 채널 RSS (키 불필요). 퍼온 곳 이름은 피드가 알려주는 채널명을 쓴다.
 YOUTUBE_CHANNELS = [
     "UCbfYPyITQ-7l4upoX8nvctg", "UCXZCJLdBC09xxGZ6gcdrc6A", "UCP7jMXSY2xbc3KCAE0MHQ-A",
-    "UCrDwWp7EBBv4NwvScIpBDOA", "UCZHmQk67mSJgfCCTn7xBfew",
+    "UCrDwWp7EBBv4NwvScIpBDOA",
     "UCawZsQWqfGSbCI5yjkdVkTA", "UCXUPKJO5MZQN11PqgIvyuvQ", "UCsBjURrPoezykLs9EqgamOA",
 ]
 SUBREDDITS = ["LocalLLaMA", "MachineLearning", "OpenAI", "ClaudeAI", "singularity", "artificial", "StableDiffusion"]
