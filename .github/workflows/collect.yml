@@ -9,7 +9,6 @@ on:
 
 permissions:
   contents: read
-  models: read     # GitHub Models 무료 번역
   pages: write
   id-token: write
 
@@ -20,7 +19,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -32,16 +31,19 @@ jobs:
       # 수집 내역(SQLite)은 캐시에 이어 붙인다 — 저장소 커밋 기록을 더럽히지 않기 위해
       - uses: actions/cache/restore@v4
         with:
-          path: data
+          path: data/doran.db
           key: doran-db-${{ github.run_id }}
           restore-keys: doran-db-
 
       - name: 수집
         run: python -m app.collector
+      # 오픈소스 번역 모델(약 600MB)은 고정 키로 따로 캐시한다
+      - uses: actions/cache@v4
+        with:
+          path: models
+          key: nllb-600m-ct2-int8-v1
       - name: 번역
         run: python -m app.translate
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 정적 사이트 굽기
         run: python -m app.build _site
         env:
@@ -49,7 +51,7 @@ jobs:
 
       - uses: actions/cache/save@v4
         with:
-          path: data
+          path: data/doran.db
           key: doran-db-${{ github.run_id }}
 
       - uses: actions/upload-pages-artifact@v3

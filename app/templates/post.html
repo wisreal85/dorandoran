@@ -19,7 +19,7 @@
   </header>
   <div class="body">
     {% if post.summary_ko and post.summary_ko != post.summary %}
-    <div class="label">AI 요약</div>
+    <div class="label">요약 · 기계 번역</div>
     <p class="summary">{{ post.summary_ko }}</p>
     {% if post.summary %}<details class="orig"><summary>원문 발췌 보기</summary><p lang="en">{{ post.summary }}</p></details>{% endif %}
     {% elif post.summary %}

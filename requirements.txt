@@ -4,3 +4,5 @@ jinja2
 httpx
 feedparser
 python-multipart
+ctranslate2
+sentencepiece
